@@ -1,0 +1,58 @@
+﻿node.exe : Loaded Prisma 
+config from 
+prisma.config.ts.
+At C:\Program 
+Files\nodejs\npx.ps1:29 
+char:3
++   & $NODE_EXE 
+$NPX_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~
+    + CategoryInfo        
+      : NotSpecified: (L  
+  oaded Prisma c...isma   
+ .config.ts.:String) [    
+], RemoteException
+    + FullyQualifiedError 
+   Id : NativeCommandErr  
+  or
+ 
+
+Prisma schema loaded from 
+prisma\schema.prisma.
+
+Error: Prisma schema 
+validation - (validate 
+wasm)
+Error code: P1012
+[1;91merror[0m: [1mThe 
+datasource property `url` 
+is no longer supported in 
+schema files. Move 
+connection URLs for 
+Migrate to 
+`prisma.config.ts` and 
+pass either `adapter` for 
+a direct database 
+connection or 
+`accelerateUrl` for 
+Accelerate to the 
+`PrismaClient` 
+constructor. See https://p
+ris.ly/d/config-datasource
+ and https://pris.ly/d/pri
+sma7-client-config[0m
+  [1;94m-->[0m  [4mpris
+ma\schema.prisma:7[0m
+[1;94m   | [0m
+[1;94m 6 | [0m  
+provider = "postgresql"
+[1;94m 7 | [0m  
+[1;91murl      = 
+env("DATABASE_URL")[0m
+[1;94m   | [0m
+
+Validation Error Count: 1
+[Context: validate]
+
+Prisma CLI Version : 7.6.0
