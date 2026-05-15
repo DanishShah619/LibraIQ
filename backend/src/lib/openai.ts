@@ -2,10 +2,20 @@ import OpenAI from "openai";
 import { prisma } from "@/lib/prisma";
 import { cacheGet, cacheSet, cacheDel, KEYS } from "@/lib/redis";
 
-const openai = new OpenAI({
-  baseURL: "https://api.groq.com/openai/v1",
-  apiKey: process.env.GROQ_API_KEY,
-});
+let openai: OpenAI | null = null;
+
+function getOpenAIClient() {
+  if (!process.env.GROQ_API_KEY) {
+    throw new Error("GROQ_API_KEY is required to generate AI recommendations");
+  }
+
+  openai ??= new OpenAI({
+    baseURL: "https://api.groq.com/openai/v1",
+    apiKey: process.env.GROQ_API_KEY,
+  });
+
+  return openai;
+}
 
 export async function getAIRecommendations(userId: string): Promise<string[]> {
   // Check Redis cache first
@@ -59,7 +69,7 @@ export async function getAIRecommendations(userId: string): Promise<string[]> {
   // Ask the LLM to rank the candidates by number, not hallucinate ISBNs
   const prompt = buildRerankPrompt(candidates, topGenres, topAuthors, recentTitles);
 
-  const completion = await openai.chat.completions.create({
+  const completion = await getOpenAIClient().chat.completions.create({
     model: "llama-3.1-8b-instant",
     messages: [{ role: "user", content: prompt }],
     max_tokens: 100,
