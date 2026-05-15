@@ -1,4 +1,4 @@
-process.env.DATABASE_URL = process.env.DATABASE_URL; // keep existing override
+process.env.DATABASE_URL = process.env.DATABASE_URL;
 require("dotenv").config({ override: false }); 
 
 
