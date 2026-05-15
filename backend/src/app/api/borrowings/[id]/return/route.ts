@@ -2,10 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { awardPoints, awardFirstGenreBonuses, checkAndAwardBadges } from "@/lib/gamification";
-import { Resend } from "resend";
+import { getResendClient } from "@/lib/email";
 import { invalidateAICache } from "@/lib/openai";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 // PATCH /api/borrowings/[id]/return
 export async function PATCH(_req: NextRequest, { params }: { params: { id: string } }) {
@@ -62,7 +60,7 @@ export async function PATCH(_req: NextRequest, { params }: { params: { id: strin
       // Notify via email
       const optOut = await prisma.emailOptOut.findUnique({ where: { userId: nextReservation.userId } });
       if (!optOut) {
-        await resend.emails.send({
+        await getResendClient().emails.send({
           from: process.env.EMAIL_FROM!,
           to: nextReservation.user.email,
           subject: `LibraIQ — "${borrowing.book.title}" is now available!`,

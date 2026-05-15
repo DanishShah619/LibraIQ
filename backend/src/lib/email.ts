@@ -1,6 +1,15 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let resend: Resend | null = null;
+
+export function getResendClient() {
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error("RESEND_API_KEY is required to send email");
+  }
+
+  resend ??= new Resend(process.env.RESEND_API_KEY);
+  return resend;
+}
 
 export async function sendTransactionalEmail(
   to: string,
@@ -8,7 +17,7 @@ export async function sendTransactionalEmail(
   html: string
 ): Promise<void> {
   try {
-    await resend.emails.send({
+    await getResendClient().emails.send({
       from: process.env.EMAIL_FROM!,
       to,
       subject,

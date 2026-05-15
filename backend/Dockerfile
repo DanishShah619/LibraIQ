@@ -15,6 +15,7 @@ COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
+# Prisma 7 loads prisma.config.js during generate and requires a valid URL here.
 ENV DATABASE_URL="postgresql://postgres:postgres@localhost:5432/postgres"
 
 RUN npx prisma generate

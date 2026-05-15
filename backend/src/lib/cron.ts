@@ -1,12 +1,10 @@
 import { prisma } from "@/lib/prisma";
-import { Resend } from "resend";
+import { getResendClient } from "@/lib/email";
 import { startOfDay, endOfDay, addDays } from "date-fns";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 async function sendEmail(to: string, subject: string, html: string) {
   try {
-    await resend.emails.send({ from: process.env.EMAIL_FROM!, to, subject, html });
+    await getResendClient().emails.send({ from: process.env.EMAIL_FROM!, to, subject, html });
   } catch (err) {
     console.error("[email]", err);
   }

@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { Resend } from "resend";
+import { getResendClient } from "@/lib/email";
 import crypto from "crypto";
 import { z } from "zod";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
 const schema = z.object({ email: z.string().email() });
 
 export async function POST(req: NextRequest) {
@@ -33,7 +32,7 @@ export async function POST(req: NextRequest) {
 
     const resetUrl = `${process.env.NEXTAUTH_URL}/reset-password?token=${token}`;
 
-    await resend.emails.send({
+    await getResendClient().emails.send({
       from: process.env.EMAIL_FROM!,
       to: email,
       subject: "LibraIQ — Reset your password",
