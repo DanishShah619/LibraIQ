@@ -14,7 +14,7 @@ const pool = new Pool({ connectionString: process.env.DATABASE_URL,
 });
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
-console.log("Connecting to:", process.env.DATABASE_URL);
+console.log("Connecting to configured database.");
 
 function getRequiredEnv(name) {
   const value = process.env[name];
