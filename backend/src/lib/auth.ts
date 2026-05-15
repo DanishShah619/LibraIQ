@@ -25,10 +25,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      allowDangerousEmailAccountLinking: true,
     }),
     GitHub({
       clientId: process.env.GITHUB_CLIENT_ID!,
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+      allowDangerousEmailAccountLinking: true,
     }),
     Credentials({
       name: "credentials",
@@ -112,20 +114,25 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
     async signIn({ user, account }) {
       // For OAuth providers, auto-create profile if needed
-      if (account?.provider !== "credentials") {
+      if (account?.provider !== "credentials" && user.email) {
         const existing = await prisma.user.findUnique({
-          where: { email: user.email! },
+          where: { email: user.email },
         });
         if (!existing) {
           const [firstName, ...rest] = (user.name || "User").split(" ");
           await prisma.user.create({
             data: {
-              email: user.email!,
+              email: user.email,
               firstName,
               lastName: rest.join(" ") || "",
               avatarUrl: user.image,
               role: "MEMBER",
             },
+          });
+        } else if (user.image && !existing.avatarUrl) {
+          await prisma.user.update({
+            where: { id: existing.id },
+            data: { avatarUrl: user.image },
           });
         }
       }

@@ -5,6 +5,10 @@ import { z } from "zod";
 import type { BookWithGenres } from "@/types";
 import { rateLimitResponse } from "@/lib/rateLimit";
 
+const catalogueCacheHeaders = {
+  "Cache-Control": "private, max-age=20, stale-while-revalidate=120",
+};
+
 const bookSchema = z.object({
   isbn:          z.string().min(1, "ISBN required"),
   title:         z.string().min(1, "Title required"),
@@ -87,12 +91,12 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({
         data: booksWithAvailability.filter((b: { availableCopies: number }) => b.availableCopies > 0),
         total, page, pageSize, totalPages: Math.ceil(total / pageSize),
-      });
+      }, { headers: catalogueCacheHeaders });
     }
 
     return NextResponse.json({
       data: booksWithAvailability, total, page, pageSize, totalPages: Math.ceil(total / pageSize),
-    });
+    }, { headers: catalogueCacheHeaders });
   } catch (err) {
     console.error("[GET /api/books]", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

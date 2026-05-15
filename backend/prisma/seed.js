@@ -70,7 +70,15 @@ console.log(`✅ Seeded ${genres.length} genres`);
       lastName:     "Admin",
       role:         "SUPER_ADMIN",
     },
-    update: {},
+    update: {
+      passwordHash: adminHash,
+      firstName:    "Super",
+      lastName:     "Admin",
+      role:         "SUPER_ADMIN",
+      isActive:     true,
+      loginAttempts: 0,
+      lockedUntil:  null,
+    },
   });
   console.log(`Super Admin seeded: ${adminEmail}`);
 
@@ -88,7 +96,15 @@ console.log(`✅ Seeded ${genres.length} genres`);
       lastName:     "Librarian",
       role:         "LIBRARIAN",
     },
-    update: {},
+    update: {
+      passwordHash: libHash,
+      firstName:    "Jane",
+      lastName:     "Librarian",
+      role:         "LIBRARIAN",
+      isActive:     true,
+      loginAttempts: 0,
+      lockedUntil:  null,
+    },
   });
   console.log(`Librarian seeded: ${libEmail}`);
 
