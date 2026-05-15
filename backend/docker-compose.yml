@@ -39,6 +39,18 @@ services:
       db:
         condition: service_healthy
 
+  seed:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: migrate
+    env_file: .env
+    command: ["node", "prisma/seed.js"]
+    restart: no
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
   web:
     build:
       context: .
@@ -52,6 +64,8 @@ services:
       db:
         condition: service_healthy
       migrate:
+        condition: service_completed_successfully
+      seed:
         condition: service_completed_successfully
       redis:
         condition: service_healthy

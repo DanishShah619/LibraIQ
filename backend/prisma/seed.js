@@ -16,6 +16,14 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 console.log("Connecting to:", process.env.DATABASE_URL);
 
+function getRequiredEnv(name) {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`${name} must be set before running seed`);
+  }
+  return value;
+}
+
 async function main() {
   console.log("🌱 Seeding database...");
 const genres = [];
@@ -49,8 +57,9 @@ console.log(`✅ Seeded ${genres.length} genres`);
   console.log(`✅ Seeded ${badges.length} badges`);
 
   // ── Super Admin ──────────────────────────────────────────────────────
-  const adminEmail = "admin@libraiq.dev";
-  const adminHash = await bcrypt.hash("Admin@123456", 12);
+  const adminEmail = getRequiredEnv("SEED_ADMIN_EMAIL");
+  const adminPassword = getRequiredEnv("SEED_ADMIN_PASSWORD");
+  const adminHash = await bcrypt.hash(adminPassword, 12);
 
   await prisma.user.upsert({
     where: { email: adminEmail },
@@ -63,11 +72,12 @@ console.log(`✅ Seeded ${genres.length} genres`);
     },
     update: {},
   });
-  console.log(`✅ Super Admin seeded: ${adminEmail} / Admin@123456`);
+  console.log(`Super Admin seeded: ${adminEmail}`);
 
   // ── Librarian ────────────────────────────────────────────────────────
-  const libEmail = "librarian@libraiq.dev";
-  const libHash = await bcrypt.hash("Lib@123456", 12);
+  const libEmail = getRequiredEnv("SEED_LIBRARIAN_EMAIL");
+  const libPassword = getRequiredEnv("SEED_LIBRARIAN_PASSWORD");
+  const libHash = await bcrypt.hash(libPassword, 12);
 
   await prisma.user.upsert({
     where: { email: libEmail },
@@ -80,7 +90,7 @@ console.log(`✅ Seeded ${genres.length} genres`);
     },
     update: {},
   });
-  console.log(`✅ Librarian seeded: ${libEmail} / Lib@123456`);
+  console.log(`Librarian seeded: ${libEmail}`);
 
   // ── Sample Books ─────────────────────────────────────────────────────
   const genreMap = Object.fromEntries(genres.map((g) => [g.name, g.id]));
